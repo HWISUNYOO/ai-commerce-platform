@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: orchestrator
+
+server:
+  port: 8080
+
+# Anthropic Claude API client settings.
+# The API key is read from the ANTHROPIC_API_KEY environment variable.
+claude:
+  api-key: ${ANTHROPIC_API_KEY:}
+  base-url: https://api.anthropic.com
+  model: claude-sonnet-4-6
+  max-tokens: 1024
+  anthropic-version: "2023-06-01"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
