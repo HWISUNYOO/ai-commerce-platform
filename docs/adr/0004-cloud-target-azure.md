@@ -5,7 +5,7 @@
 
 ## 배경
 
-레퍼런스 결제·정산 MSA를 컨테이너로 패키징해 Kubernetes에 올리고 CI/CD로
+커머스 MSA를 컨테이너로 패키징해 Kubernetes에 올리고 CI/CD로
 배포한다. 클라우드 벤더로 AWS와 Azure를 검토했다.
 
 ## 결정
@@ -18,7 +18,7 @@
 - 메시징: Kafka(자체 호스팅 또는 Azure Event Hubs Kafka 호환 엔드포인트 검토)
 - CI/CD: GitHub Actions → AKS 배포
 
-근거: 국내 대기업·금융권 일부의 Azure 선호, 그리고 AWS 편중 포트폴리오와의 차별화.
+근거: 국내 대기업·금융권 일부의 Azure 선호, 그리고 AWS 일변도에서 벗어난 기술 다양성 확보.
 
 ## 이식성 원칙
 

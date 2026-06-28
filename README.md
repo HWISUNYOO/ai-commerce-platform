@@ -1,6 +1,6 @@
 # ai-commerce-platform
 
-> 일반 상품 커머스를 **MSA**로 구축하고 **AI(RAG/Agent)** 기능을 더한 이직용 포트폴리오 플랫폼.
+> 일반 상품 커머스를 **MSA**로 구축하고 **AI(RAG/Agent)** 기능을 더한 커머스 플랫폼.
 > 회원·상품·주문·결제·배송·AI 6개 서비스 + API Gateway + React 프론트엔드.
 
 ## 아키텍처
@@ -44,7 +44,7 @@ Docker · Kubernetes(AKS) · Prometheus/Grafana · GitHub Actions · React · AI
 - [ ] **Phase 3** — Redis · Kafka · Docker
 - [ ] **Phase 4** — AI 서비스(RAG/Agent) + Azure AI-103 학습 병행
 - [ ] **Phase 5** — Kubernetes · 모니터링(Prometheus/Grafana) · GitHub Actions
-- [ ] **Phase 6** — 성능 테스트 · 트러블슈팅 문서화 · 포트폴리오 정리
+- [ ] **Phase 6** — 성능 테스트 · 트러블슈팅 문서화 · 문서 정리
 
 ## 현재 동작하는 것
 
