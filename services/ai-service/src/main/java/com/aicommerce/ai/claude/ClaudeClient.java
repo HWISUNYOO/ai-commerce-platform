@@ -1,8 +1,8 @@
-package dev.payflow.orchestrator.claude;
+package com.aicommerce.ai.claude;
 
-import dev.payflow.orchestrator.claude.ClaudeMessages.Message;
-import dev.payflow.orchestrator.claude.ClaudeMessages.MessageRequest;
-import dev.payflow.orchestrator.claude.ClaudeMessages.MessageResponse;
+import com.aicommerce.ai.claude.ClaudeMessages.Message;
+import com.aicommerce.ai.claude.ClaudeMessages.MessageRequest;
+import com.aicommerce.ai.claude.ClaudeMessages.MessageResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -14,8 +14,9 @@ import java.util.List;
 /**
  * Thin synchronous client for the Anthropic Messages API, built on Spring's {@link RestClient}.
  *
- * <p>This is the Phase 0 proof-of-concept: a single non-streaming completion call. Later phases
- * add tool use, prompt caching, streaming, and structured-output parsing on top of this.
+ * <p>Opt-in LLM backend (per ADR-0005). The default backend is the subscription-based Claude
+ * Code CLI; this client is used only when an API key is supplied. Later phases add tool use,
+ * prompt caching, streaming, and structured-output parsing on top of this.
  */
 @Component
 public class ClaudeClient {

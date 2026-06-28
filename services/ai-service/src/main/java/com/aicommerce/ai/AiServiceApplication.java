@@ -1,4 +1,4 @@
-package dev.payflow.orchestrator;
+package com.aicommerce.ai;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-public class OrchestratorApplication {
+public class AiServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(OrchestratorApplication.class, args);
+		SpringApplication.run(AiServiceApplication.class, args);
 	}
 
 }

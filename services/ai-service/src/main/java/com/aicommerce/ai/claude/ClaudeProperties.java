@@ -1,4 +1,4 @@
-package dev.payflow.orchestrator.claude;
+package com.aicommerce.ai.claude;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -8,7 +8,8 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
  *
  * <p>The API key is read from the {@code ANTHROPIC_API_KEY} environment variable by default
  * (see application.yml). This key is billed per-token on the Anthropic Developer Platform and
- * is separate from any Claude.ai / Claude Code subscription.
+ * is separate from any Claude.ai / Claude Code subscription. Per ADR-0005 the default LLM
+ * backend is the subscription-based Claude Code CLI; this API client is the opt-in alternative.
  */
 @ConfigurationProperties(prefix = "claude")
 public record ClaudeProperties(

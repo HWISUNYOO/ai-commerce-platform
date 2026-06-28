@@ -1,10 +1,10 @@
-package dev.payflow.orchestrator;
+package com.aicommerce.ai;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class OrchestratorApplicationTests {
+class AiServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

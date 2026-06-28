@@ -1,4 +1,4 @@
-package dev.payflow.orchestrator.claude;
+package com.aicommerce.ai.claude;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Minimal record models for the Anthropic Messages API
- * (POST /v1/messages). Only the fields the orchestrator needs are mapped;
+ * (POST /v1/messages). Only the fields the service needs are mapped;
  * unknown response fields are ignored so the API can evolve without breaking us.
  */
 public final class ClaudeMessages {
