@@ -1,0 +1,16 @@
+# Tests run against an in-memory H2 database in PostgreSQL-compatibility mode.
+# Flyway is disabled here; Hibernate generates the schema from the entities.
+# The real PostgreSQL schema is managed by Flyway (db/migration) in the main profile.
+spring:
+  datasource:
+    url: jdbc:h2:mem:member;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate.format_sql: true
+  flyway:
+    enabled: false
