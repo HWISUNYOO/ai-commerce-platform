@@ -14,3 +14,8 @@ spring:
       hibernate.format_sql: true
   flyway:
     enabled: false
+
+# 테스트에서는 Kafka 브로커가 없으므로 이벤트 발행을 끈다.
+app:
+  events:
+    enabled: false

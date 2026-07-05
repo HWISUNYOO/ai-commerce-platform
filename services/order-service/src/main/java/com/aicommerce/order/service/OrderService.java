@@ -2,6 +2,8 @@ package com.aicommerce.order.service;
 
 import com.aicommerce.order.domain.Order;
 import com.aicommerce.order.domain.OrderItem;
+import com.aicommerce.order.event.OrderCreatedEvent;
+import com.aicommerce.order.event.OrderEventPublisher;
 import com.aicommerce.order.exception.NotFoundException;
 import com.aicommerce.order.repository.OrderRepository;
 import com.aicommerce.order.web.dto.OrderCreateRequest;
@@ -17,6 +19,7 @@ import java.util.List;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
+	private final OrderEventPublisher eventPublisher;
 
 	@Transactional
 	public OrderResponse create(OrderCreateRequest request) {
@@ -31,7 +34,10 @@ public class OrderService {
 					.quantity(item.quantity())
 					.build());
 		}
-		return OrderResponse.from(orderRepository.save(order));
+		Order saved = orderRepository.save(order);
+		eventPublisher.publishOrderCreated(
+				new OrderCreatedEvent(saved.getId(), saved.getMemberId(), saved.getTotalAmount()));
+		return OrderResponse.from(saved);
 	}
 
 	@Transactional(readOnly = true)
