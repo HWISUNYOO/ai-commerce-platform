@@ -6,6 +6,7 @@ import com.aicommerce.product.repository.ProductRepository;
 import com.aicommerce.product.web.dto.ProductCreateRequest;
 import com.aicommerce.product.web.dto.ProductResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ public class ProductService {
 		return ProductResponse.from(productRepository.save(product));
 	}
 
+	@Cacheable(cacheNames = "products", key = "#id")
 	@Transactional(readOnly = true)
 	public ProductResponse get(Long id) {
 		return productRepository.findById(id)

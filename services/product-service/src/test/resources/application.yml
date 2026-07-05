@@ -14,3 +14,6 @@ spring:
       hibernate.format_sql: true
   flyway:
     enabled: false
+  # 테스트에서는 Redis가 없으므로 캐시를 끈다.
+  cache:
+    type: none
