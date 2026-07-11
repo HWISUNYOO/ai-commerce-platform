@@ -32,3 +32,16 @@ export interface CreateOrderItem {
   unitPrice: number
   quantity: number
 }
+
+// AI 쇼핑 어시스턴트(에이전트) 응답
+export interface AssistantStep {
+  action: string
+  args: string
+  observation: string
+}
+
+export interface AssistantAnswer {
+  answer: string
+  steps: AssistantStep[]
+  backend: string
+}

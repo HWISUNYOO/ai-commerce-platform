@@ -1,4 +1,4 @@
-import type { Product, Order, CreateOrderItem } from './types'
+import type { Product, Order, CreateOrderItem, AssistantAnswer } from './types'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
@@ -18,5 +18,10 @@ export const api = {
     request<Order>('/api/orders', {
       method: 'POST',
       body: JSON.stringify({ memberId, items }),
+    }),
+  askAssistant: (query: string) =>
+    request<AssistantAnswer>('/api/ai/assistant', {
+      method: 'POST',
+      body: JSON.stringify({ query }),
     }),
 }
