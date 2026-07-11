@@ -1,7 +1,9 @@
 package com.aicommerce.member.web;
 
 import com.aicommerce.member.exception.DuplicateEmailException;
+import com.aicommerce.member.exception.InvalidCredentialsException;
 import com.aicommerce.member.exception.NotFoundException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -26,6 +28,12 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleDuplicate(DuplicateEmailException e) {
 		return ResponseEntity.status(HttpStatus.CONFLICT)
 				.body(new ErrorResponse("CONFLICT", e.getMessage()));
+	}
+
+	@ExceptionHandler({ InvalidCredentialsException.class, JwtException.class })
+	public ResponseEntity<ErrorResponse> handleUnauthorized(RuntimeException e) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+				.body(new ErrorResponse("UNAUTHORIZED", e.getMessage()));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

@@ -2,6 +2,7 @@ package com.aicommerce.member.service;
 
 import com.aicommerce.member.domain.Member;
 import com.aicommerce.member.exception.DuplicateEmailException;
+import com.aicommerce.member.exception.InvalidCredentialsException;
 import com.aicommerce.member.exception.NotFoundException;
 import com.aicommerce.member.repository.MemberRepository;
 import com.aicommerce.member.web.dto.MemberCreateRequest;
@@ -32,6 +33,17 @@ public class MemberService {
 				.name(request.name())
 				.build();
 		return MemberResponse.from(memberRepository.save(member));
+	}
+
+	/** 이메일/비밀번호를 검증하고 회원 정보를 반환한다(불일치 시 401). */
+	@Transactional(readOnly = true)
+	public MemberResponse authenticate(String email, String rawPassword) {
+		Member member = memberRepository.findByEmail(email)
+				.orElseThrow(InvalidCredentialsException::new);
+		if (!passwordEncoder.matches(rawPassword, member.getPasswordHash())) {
+			throw new InvalidCredentialsException();
+		}
+		return MemberResponse.from(member);
 	}
 
 	@Transactional(readOnly = true)

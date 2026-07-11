@@ -1,9 +1,16 @@
-import type { Product, Order, CreateOrderItem, AssistantAnswer } from './types'
+import type {
+  Product,
+  Order,
+  CreateOrderItem,
+  AssistantAnswer,
+  Member,
+  LoginResponse,
+} from './types'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
     ...options,
+    headers: { 'Content-Type': 'application/json', ...(options?.headers ?? {}) },
   })
   if (!res.ok) {
     const text = await res.text()
@@ -32,5 +39,19 @@ export const api = {
     request<AssistantAnswer>('/api/ai/assistant', {
       method: 'POST',
       body: JSON.stringify({ query }),
+    }),
+  register: (email: string, password: string, name: string) =>
+    request<Member>('/api/members', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, name }),
+    }),
+  login: (email: string, password: string) =>
+    request<LoginResponse>('/api/members/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+  me: (token: string) =>
+    request<Member>('/api/members/me', {
+      headers: { Authorization: `Bearer ${token}` },
     }),
 }

@@ -34,6 +34,19 @@ export interface CreateOrderItem {
   quantity: number
 }
 
+export interface Member {
+  id: number
+  email: string
+  name: string
+  status: string
+  createdAt: string
+}
+
+export interface LoginResponse {
+  token: string
+  member: Member
+}
+
 // AI 쇼핑 어시스턴트(에이전트) 응답
 export interface AssistantStep {
   action: string

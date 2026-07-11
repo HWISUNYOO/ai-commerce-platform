@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { api } from '../api/client'
 import type { Product } from '../api/types'
+import { useCart } from '../context/CartContext'
 
 const won = (n: number) => n.toLocaleString('ko-KR') + '원'
-// 데모용 회원 ID. 로그인 기능은 이후 단계에서 추가한다.
-const DEMO_MEMBER_ID = 1
 
 export default function ProductDetailPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
+  const { add } = useCart()
   const [product, setProduct] = useState<Product | null>(null)
   const [qty, setQty] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [ordering, setOrdering] = useState(false)
+  const [added, setAdded] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -25,33 +24,18 @@ export default function ProductDetailPage() {
       .finally(() => setLoading(false))
   }, [id])
 
-  async function placeOrder() {
-    if (!product) return
-    setOrdering(true)
-    setError(null)
-    try {
-      const quantity = Math.min(product.stockQuantity, Math.max(1, qty))
-      const order = await api.createOrder(DEMO_MEMBER_ID, [
-        {
-          productId: product.id,
-          productName: product.name,
-          unitPrice: product.price,
-          quantity,
-        },
-      ])
-      navigate(`/orders/${order.id}`, { state: order })
-    } catch (e) {
-      setError(String(e))
-      setOrdering(false)
-    }
-  }
-
   if (loading) return <p className="text-gray-500">불러오는 중…</p>
   if (error && !product) return <p className="text-red-600">에러: {error}</p>
   if (!product) return null
 
   const soldOut = product.stockQuantity <= 0
   const cappedQty = Math.min(qty, Math.max(1, product.stockQuantity))
+
+  function addToCart() {
+    if (!product) return
+    add(product, cappedQty)
+    setAdded(true)
+  }
 
   return (
     <div>
@@ -78,27 +62,31 @@ export default function ProductDetailPage() {
               max={product.stockQuantity}
               value={cappedQty}
               disabled={soldOut}
-              onChange={(e) =>
-                setQty(
-                  Math.min(
-                    product.stockQuantity,
-                    Math.max(1, Number(e.target.value)),
-                  ),
-                )
-              }
+              onChange={(e) => {
+                setQty(Math.min(product.stockQuantity, Math.max(1, Number(e.target.value))))
+                setAdded(false)
+              }}
               className="w-20 rounded border px-2 py-1 disabled:bg-gray-100"
             />
             <span className="text-sm text-gray-500">합계 {won(product.price * cappedQty)}</span>
           </div>
 
           <button
-            onClick={placeOrder}
-            disabled={ordering || soldOut}
+            onClick={addToCart}
+            disabled={soldOut}
             className="mt-6 w-full rounded-lg bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
           >
-            {soldOut ? '품절' : ordering ? '주문 중…' : '주문하기'}
+            {soldOut ? '품절' : '장바구니 담기'}
           </button>
-          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+
+          {added && (
+            <p className="mt-3 text-center text-sm text-green-700">
+              장바구니에 담았습니다.{' '}
+              <Link to="/cart" className="font-semibold text-indigo-600">
+                장바구니 보기 →
+              </Link>
+            </p>
+          )}
         </div>
       </div>
     </div>

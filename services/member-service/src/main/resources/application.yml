@@ -17,6 +17,11 @@ spring:
 server:
   port: 8081
 
+# JWT 로그인 토큰 서명 설정(운영에서는 시크릿을 환경변수/시크릿 매니저로 주입).
+jwt:
+  secret: ${JWT_SECRET:dev-only-secret-change-me-please-32bytes-minimum!!}
+  expiration-minutes: ${JWT_EXPIRATION_MINUTES:120}
+
 management:
   endpoints:
     web:
