@@ -5,7 +5,19 @@ spring:
 server:
   port: 8080
 
-# Anthropic Claude API client settings.
+# LLM 백엔드 선택(ADR-0005): cli = 구독 기반 Claude Code CLI(기본, 비용 0), api = Anthropic API.
+llm:
+  backend: ${LLM_BACKEND:cli}
+  cli:
+    executable: ${CLAUDE_CLI_PATH:}   # 비어 있으면 VSCode 확장에서 claude 실행 파일 자동 탐색
+    model: ${CLAUDE_CLI_MODEL:}       # 비어 있으면 CLI 기본 모델
+    timeout-seconds: 120
+
+# 서비스 간 통신 대상(Docker/K8s에서 서비스명으로 교체).
+services:
+  product-url: ${PRODUCT_SERVICE_URL:http://localhost:8082}
+
+# Anthropic Claude API client settings (llm.backend=api 일 때 사용).
 # The API key is read from the ANTHROPIC_API_KEY environment variable.
 claude:
   api-key: ${ANTHROPIC_API_KEY:}
