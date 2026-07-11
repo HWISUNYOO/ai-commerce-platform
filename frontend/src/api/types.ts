@@ -4,6 +4,7 @@ export interface Product {
   description: string | null
   price: number
   stockQuantity: number
+  imageEmoji: string | null
   status: string
   createdAt: string
 }

@@ -3,6 +3,7 @@ package com.aicommerce.product.web;
 import com.aicommerce.product.service.ProductService;
 import com.aicommerce.product.web.dto.ProductCreateRequest;
 import com.aicommerce.product.web.dto.ProductResponse;
+import com.aicommerce.product.web.dto.StockDecreaseRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -37,5 +38,12 @@ public class ProductController {
 	@GetMapping
 	public List<ProductResponse> list() {
 		return productService.list();
+	}
+
+	/** 주문 시 재고 차감(order-service가 호출). 재고 부족이면 409를 반환한다. */
+	@PostMapping("/stock/decrease")
+	@ResponseStatus(HttpStatus.OK)
+	public void decreaseStock(@RequestBody @Valid StockDecreaseRequest request) {
+		productService.decreaseStock(request.items());
 	}
 }

@@ -11,6 +11,7 @@ public record ProductResponse(
 		String description,
 		BigDecimal price,
 		Integer stockQuantity,
+		String imageEmoji,
 		String status,
 		Instant createdAt) {
 
@@ -21,6 +22,7 @@ public record ProductResponse(
 				p.getDescription(),
 				p.getPrice(),
 				p.getStockQuantity(),
+				p.getImageEmoji(),
 				p.getStatus().name(),
 				p.getCreatedAt());
 	}

@@ -6,7 +6,16 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
     ...options,
   })
   if (!res.ok) {
-    throw new Error(`${res.status} ${await res.text()}`)
+    const text = await res.text()
+    // 서버 에러 응답이 {code, message} 형태면 message를 사용자에게 그대로 보여준다.
+    let message = text
+    try {
+      const parsed = JSON.parse(text)
+      if (parsed?.message) message = parsed.message
+    } catch {
+      // JSON이 아니면 원문 사용
+    }
+    throw new Error(message)
   }
   return (await res.json()) as T
 }

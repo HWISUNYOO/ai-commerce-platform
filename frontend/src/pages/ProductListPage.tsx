@@ -37,12 +37,14 @@ export default function ProductListPage() {
               to={`/products/${p.id}`}
               className="rounded-lg border bg-white p-4 shadow-sm transition hover:shadow-md"
             >
-              <div className="flex h-32 items-center justify-center rounded bg-gray-100 text-4xl">
-                📦
+              <div className="flex h-32 items-center justify-center rounded bg-gray-100 text-5xl">
+                {p.imageEmoji ?? '📦'}
               </div>
               <h2 className="mt-3 font-semibold">{p.name}</h2>
               <p className="mt-1 text-lg font-bold text-indigo-600">{won(p.price)}</p>
-              <p className="mt-1 text-sm text-gray-500">재고 {p.stockQuantity}개</p>
+              <p className="mt-1 text-sm text-gray-500">
+                {p.stockQuantity > 0 ? `재고 ${p.stockQuantity}개` : '품절'}
+              </p>
             </Link>
           ))}
         </div>

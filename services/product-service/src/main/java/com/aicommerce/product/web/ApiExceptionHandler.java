@@ -1,5 +1,6 @@
 package com.aicommerce.product.web;
 
+import com.aicommerce.product.exception.InsufficientStockException;
 import com.aicommerce.product.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,12 @@ public class ApiExceptionHandler {
 	public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException e) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)
 				.body(new ErrorResponse("NOT_FOUND", e.getMessage()));
+	}
+
+	@ExceptionHandler(InsufficientStockException.class)
+	public ResponseEntity<ErrorResponse> handleInsufficientStock(InsufficientStockException e) {
+		return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body(new ErrorResponse("INSUFFICIENT_STOCK", e.getMessage()));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)

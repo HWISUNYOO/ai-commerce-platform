@@ -1,5 +1,6 @@
 package com.aicommerce.order.service;
 
+import com.aicommerce.order.client.ProductStockClient;
 import com.aicommerce.order.domain.Order;
 import com.aicommerce.order.domain.OrderItem;
 import com.aicommerce.order.event.OrderCreatedEvent;
@@ -20,9 +21,15 @@ public class OrderService {
 
 	private final OrderRepository orderRepository;
 	private final OrderEventPublisher eventPublisher;
+	private final ProductStockClient productStockClient;
 
 	@Transactional
 	public OrderResponse create(OrderCreateRequest request) {
+		// 재고를 먼저 차감(원자적, product-service 소유). 부족하면 여기서 예외 → 주문 저장 안 함.
+		productStockClient.decreaseStock(request.items().stream()
+				.map(i -> new ProductStockClient.Item(i.productId(), i.quantity()))
+				.toList());
+
 		Order order = Order.builder()
 				.memberId(request.memberId())
 				.build();

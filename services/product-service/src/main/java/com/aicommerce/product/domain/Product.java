@@ -40,6 +40,9 @@ public class Product {
 	@Column(name = "stock_quantity", nullable = false)
 	private int stockQuantity;
 
+	@Column(name = "image_emoji", length = 16)
+	private String imageEmoji;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 20)
 	private ProductStatus status;
