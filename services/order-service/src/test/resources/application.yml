@@ -15,6 +15,11 @@ spring:
   flyway:
     enabled: false
 
+  # 테스트에서는 Kafka 브로커가 없으므로 Saga 리스너(커스텀 컨테이너 팩토리)를 시작하지 않는다.
+  kafka:
+    listener:
+      auto-startup: false
+
 # 테스트에서는 Kafka 브로커가 없으므로 이벤트 발행을 끈다.
 app:
   events:

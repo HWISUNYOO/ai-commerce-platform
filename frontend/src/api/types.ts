@@ -47,6 +47,30 @@ export interface LoginResponse {
   member: Member
 }
 
+export interface PointBalance {
+  memberId: number
+  balance: number
+}
+
+export interface PointTransaction {
+  id: number
+  orderId: number
+  amount: number
+  type: string
+  createdAt: string
+}
+
+export interface Notification {
+  id: number
+  memberId: number
+  type: string
+  referenceId: number | null
+  message: string
+  channel: string
+  status: string
+  createdAt: string
+}
+
 // AI 쇼핑 어시스턴트(에이전트) 응답
 export interface AssistantStep {
   action: string

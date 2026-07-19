@@ -5,6 +5,9 @@ import type {
   AssistantAnswer,
   Member,
   LoginResponse,
+  PointBalance,
+  PointTransaction,
+  Notification,
 } from './types'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
@@ -35,6 +38,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ memberId, items }),
     }),
+  getOrder: (id: number | string) => request<Order>(`/api/orders/${id}`),
   askAssistant: (query: string) =>
     request<AssistantAnswer>('/api/ai/assistant', {
       method: 'POST',
@@ -54,4 +58,10 @@ export const api = {
     request<Member>('/api/members/me', {
       headers: { Authorization: `Bearer ${token}` },
     }),
+  getPointBalance: (memberId: number) =>
+    request<PointBalance>(`/api/points/${memberId}`),
+  getPointHistory: (memberId: number) =>
+    request<PointTransaction[]>(`/api/points/${memberId}/history`),
+  getNotifications: (memberId: number) =>
+    request<Notification[]>(`/api/notifications?memberId=${memberId}`),
 }

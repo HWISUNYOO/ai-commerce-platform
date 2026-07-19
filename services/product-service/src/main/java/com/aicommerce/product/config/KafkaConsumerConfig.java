@@ -1,10 +1,7 @@
-package com.aicommerce.notification.config;
+package com.aicommerce.product.config;
 
-import com.aicommerce.notification.event.OrderCreatedEvent;
-import com.aicommerce.notification.event.PaymentApprovedEvent;
-import com.aicommerce.notification.event.PaymentFailedEvent;
-import com.aicommerce.notification.event.PointEarnedEvent;
-import com.aicommerce.notification.event.StockRejectedEvent;
+import com.aicommerce.product.event.OrderCreatedEvent;
+import com.aicommerce.product.event.PaymentFailedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,11 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * notification-service 는 서로 다른 3개 토픽(order.created / payment.approved / point.earned)을
- * 각기 다른 이벤트 타입으로 구독한다. 단일 default 타입으로는 불가능하므로,
- * 토픽(이벤트)별로 JsonDeserializer 를 고정한 컨테이너 팩토리를 따로 만든다.
- *
- * <p>use.type.headers=false 이므로 프로듀서의 타입 헤더와 무관하게 여기서 지정한 타입으로 역직렬화된다.
+ * product-service 는 order.created(재고 예약)와 payment.failed(보상)를 서로 다른 타입으로 구독한다.
+ * 토픽(이벤트)별로 타입을 고정한 컨테이너 팩토리를 만든다.
  */
 @Configuration
 public class KafkaConsumerConfig {
@@ -30,13 +24,12 @@ public class KafkaConsumerConfig {
 	@Value("${spring.kafka.bootstrap-servers:localhost:9092}")
 	private String bootstrapServers;
 
-	@Value("${spring.kafka.consumer.group-id:notification-service}")
+	@Value("${spring.kafka.consumer.group-id:product-service}")
 	private String groupId;
 
 	@Value("${spring.kafka.consumer.auto-offset-reset:earliest}")
 	private String autoOffsetReset;
 
-	// 테스트에서는 spring.kafka.listener.auto-startup=false 로 리스너를 띄우지 않는다.
 	@Value("${spring.kafka.listener.auto-startup:true}")
 	private boolean autoStartup;
 
@@ -48,7 +41,7 @@ public class KafkaConsumerConfig {
 
 		JsonDeserializer<T> valueDeserializer = new JsonDeserializer<>(type);
 		valueDeserializer.setUseTypeHeaders(false);
-		valueDeserializer.addTrustedPackages("com.aicommerce.notification.event");
+		valueDeserializer.addTrustedPackages("com.aicommerce.product.event");
 
 		ConcurrentKafkaListenerContainerFactory<String, T> factory =
 				new ConcurrentKafkaListenerContainerFactory<>();
@@ -64,22 +57,7 @@ public class KafkaConsumerConfig {
 	}
 
 	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, PaymentApprovedEvent> paymentApprovedFactory() {
-		return factory(PaymentApprovedEvent.class);
-	}
-
-	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, PointEarnedEvent> pointEarnedFactory() {
-		return factory(PointEarnedEvent.class);
-	}
-
-	@Bean
 	public ConcurrentKafkaListenerContainerFactory<String, PaymentFailedEvent> paymentFailedFactory() {
 		return factory(PaymentFailedEvent.class);
-	}
-
-	@Bean
-	public ConcurrentKafkaListenerContainerFactory<String, StockRejectedEvent> stockRejectedFactory() {
-		return factory(StockRejectedEvent.class);
 	}
 }

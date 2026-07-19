@@ -21,7 +21,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.value.default.type: com.aicommerce.payment.event.OrderCreatedEvent
+        spring.json.value.default.type: com.aicommerce.payment.event.StockReservedEvent
         spring.json.use.type.headers: false
         spring.json.trusted.packages: com.aicommerce.payment.event
     producer:

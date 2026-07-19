@@ -54,8 +54,22 @@ public class Order {
 	@Builder
 	private Order(Long memberId) {
 		this.memberId = memberId;
-		this.status = OrderStatus.CREATED;
+		this.status = OrderStatus.PENDING;
 		this.totalAmount = BigDecimal.ZERO;
+	}
+
+	/** 결제 승인 → 주문 확정. PENDING 일 때만 전이(멱등·역전 방지). */
+	public void confirm() {
+		if (this.status == OrderStatus.PENDING) {
+			this.status = OrderStatus.CONFIRMED;
+		}
+	}
+
+	/** 재고부족/결제실패 → 주문 취소(보상). PENDING 일 때만 전이. */
+	public void cancel() {
+		if (this.status == OrderStatus.PENDING) {
+			this.status = OrderStatus.CANCELLED;
+		}
 	}
 
 	public void addItem(OrderItem item) {

@@ -13,12 +13,27 @@ spring:
       hibernate.format_sql: true
   flyway:
     enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      group-id: product-service
+      # 신규 컨슈머 그룹: 과거 order.created(구 스키마, items 없음) 재생을 피해 최신부터 소비한다.
+      auto-offset-reset: latest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
   cache:
     type: redis
+
+app:
+  events:
+    enabled: true
 
 server:
   port: 8082

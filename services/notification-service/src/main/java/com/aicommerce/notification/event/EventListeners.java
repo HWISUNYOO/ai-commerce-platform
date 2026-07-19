@@ -58,4 +58,24 @@ public class EventListeners {
 		notificationService.send(event.memberId(), NotificationType.POINT_EARNED, event.orderId(),
 				event.earnedPoints() + "포인트가 적립되었습니다. (현재 " + event.balance() + "P)");
 	}
+
+	@KafkaListener(topics = "stock.rejected", groupId = "notification-service",
+			containerFactory = "stockRejectedFactory")
+	public void onStockRejected(StockRejectedEvent event) {
+		if (!firstDelivery("notif:idem:stock-rejected:" + event.orderId())) {
+			return;
+		}
+		notificationService.send(event.memberId(), NotificationType.ORDER_CANCELLED, event.orderId(),
+				"주문이 취소되었습니다. 재고가 부족합니다. (주문번호 " + event.orderId() + ")");
+	}
+
+	@KafkaListener(topics = "payment.failed", groupId = "notification-service",
+			containerFactory = "paymentFailedFactory")
+	public void onPaymentFailed(PaymentFailedEvent event) {
+		if (!firstDelivery("notif:idem:payment-failed:" + event.orderId())) {
+			return;
+		}
+		notificationService.send(event.memberId(), NotificationType.ORDER_CANCELLED, event.orderId(),
+				"주문이 취소되었습니다. 결제에 실패했습니다. (주문번호 " + event.orderId() + ")");
+	}
 }

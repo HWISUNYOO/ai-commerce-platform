@@ -15,6 +15,10 @@ spring:
     enabled: true
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      group-id: order-service
+      # 신규 컨슈머 그룹: 과거 이벤트(구 스키마) 재생을 피하려고 최신부터 소비한다.
+      auto-offset-reset: latest
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
