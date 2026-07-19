@@ -1,0 +1,21 @@
+# 단일 진입점. / → 프론트, /api/* → 각 백엔드 서비스 (개발 Vite 프록시를 운영급으로 대체).
+# ingress-nginx 컨트롤러 필요. localhost 로 접속.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-commerce
+  namespace: ai-commerce
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - { path: /api/members,       pathType: Prefix, backend: { service: { name: member-service,       port: { number: 8081 } } } }
+          - { path: /api/products,      pathType: Prefix, backend: { service: { name: product-service,      port: { number: 8082 } } } }
+          - { path: /api/orders,        pathType: Prefix, backend: { service: { name: order-service,        port: { number: 8083 } } } }
+          - { path: /api/payments,      pathType: Prefix, backend: { service: { name: payment-service,      port: { number: 8084 } } } }
+          - { path: /api/deliveries,    pathType: Prefix, backend: { service: { name: delivery-service,     port: { number: 8085 } } } }
+          - { path: /api/points,        pathType: Prefix, backend: { service: { name: point-service,        port: { number: 8086 } } } }
+          - { path: /api/notifications, pathType: Prefix, backend: { service: { name: notification-service, port: { number: 8087 } } } }
+          - { path: /api/ai,            pathType: Prefix, backend: { service: { name: ai-service,           port: { number: 8080 } } } }
+          - { path: /,                  pathType: Prefix, backend: { service: { name: frontend,             port: { number: 80 } } } }

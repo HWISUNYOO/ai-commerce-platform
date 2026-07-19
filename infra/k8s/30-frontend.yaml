@@ -1,0 +1,26 @@
+# 프론트엔드(nginx 정적 서빙). 외부 노출은 Ingress 가 담당하므로 Service 는 ClusterIP.
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: frontend, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: frontend } }
+  template:
+    metadata: { labels: { app: frontend } }
+    spec:
+      containers:
+        - name: frontend
+          image: ai-commerce/frontend:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 80 }]
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata: { name: frontend, namespace: ai-commerce }
+spec:
+  selector: { app: frontend }
+  ports: [{ port: 80, targetPort: 80 }]

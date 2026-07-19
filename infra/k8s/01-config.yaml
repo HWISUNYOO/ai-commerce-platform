@@ -1,0 +1,20 @@
+# 서비스 공통 설정/비밀. 각 서비스 Deployment 가 envFrom 으로 주입받는다.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: ai-commerce
+data:
+  KAFKA_BOOTSTRAP: "kafka:9092"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+  namespace: ai-commerce
+type: Opaque
+stringData:
+  DB_USERNAME: "postgres"
+  DB_PASSWORD: "postgres"

@@ -1,0 +1,341 @@
+# 백엔드 8개 서비스. 각 Deployment+Service.
+# - envFrom app-config: KAFKA_BOOTSTRAP, REDIS_HOST/PORT 주입
+# - DB 자격: app-secret (DB_USERNAME/DB_PASSWORD)
+# - probe: 이미 노출한 /actuator/health/{liveness,readiness} 사용
+# - image: 로컬 빌드(ai-commerce/*:latest), imagePullPolicy=IfNotPresent 로 레지스트리 불필요
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: member-service, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: member-service } }
+  template:
+    metadata:
+      labels: { app: member-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8081"
+    spec:
+      containers:
+        - name: member-service
+          image: ai-commerce/member-service:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8081 }]
+          envFrom: [{ configMapRef: { name: app-config } }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: "jdbc:postgresql://postgres:5432/member_db" }
+            - { name: DB_USERNAME, valueFrom: { secretKeyRef: { name: app-secret, key: DB_USERNAME } } }
+            - { name: DB_PASSWORD, valueFrom: { secretKeyRef: { name: app-secret, key: DB_PASSWORD } } }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8081 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8081 }
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: member-service, namespace: ai-commerce }
+spec:
+  selector: { app: member-service }
+  ports: [{ port: 8081, targetPort: 8081 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: product-service, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: product-service } }
+  template:
+    metadata:
+      labels: { app: product-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8082"
+    spec:
+      containers:
+        - name: product-service
+          image: ai-commerce/product-service:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8082 }]
+          envFrom: [{ configMapRef: { name: app-config } }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: "jdbc:postgresql://postgres:5432/product_db" }
+            - { name: DB_USERNAME, valueFrom: { secretKeyRef: { name: app-secret, key: DB_USERNAME } } }
+            - { name: DB_PASSWORD, valueFrom: { secretKeyRef: { name: app-secret, key: DB_PASSWORD } } }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8082 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8082 }
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: product-service, namespace: ai-commerce }
+spec:
+  selector: { app: product-service }
+  ports: [{ port: 8082, targetPort: 8082 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: order-service, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: order-service } }
+  template:
+    metadata:
+      labels: { app: order-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8083"
+    spec:
+      containers:
+        - name: order-service
+          image: ai-commerce/order-service:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8083 }]
+          envFrom: [{ configMapRef: { name: app-config } }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: "jdbc:postgresql://postgres:5432/order_db" }
+            - { name: DB_USERNAME, valueFrom: { secretKeyRef: { name: app-secret, key: DB_USERNAME } } }
+            - { name: DB_PASSWORD, valueFrom: { secretKeyRef: { name: app-secret, key: DB_PASSWORD } } }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8083 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8083 }
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: order-service, namespace: ai-commerce }
+spec:
+  selector: { app: order-service }
+  ports: [{ port: 8083, targetPort: 8083 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: payment-service, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: payment-service } }
+  template:
+    metadata:
+      labels: { app: payment-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8084"
+    spec:
+      containers:
+        - name: payment-service
+          image: ai-commerce/payment-service:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8084 }]
+          envFrom: [{ configMapRef: { name: app-config } }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: "jdbc:postgresql://postgres:5432/payment_db" }
+            - { name: DB_USERNAME, valueFrom: { secretKeyRef: { name: app-secret, key: DB_USERNAME } } }
+            - { name: DB_PASSWORD, valueFrom: { secretKeyRef: { name: app-secret, key: DB_PASSWORD } } }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8084 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8084 }
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: payment-service, namespace: ai-commerce }
+spec:
+  selector: { app: payment-service }
+  ports: [{ port: 8084, targetPort: 8084 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: delivery-service, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: delivery-service } }
+  template:
+    metadata:
+      labels: { app: delivery-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8085"
+    spec:
+      containers:
+        - name: delivery-service
+          image: ai-commerce/delivery-service:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8085 }]
+          envFrom: [{ configMapRef: { name: app-config } }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: "jdbc:postgresql://postgres:5432/delivery_db" }
+            - { name: DB_USERNAME, valueFrom: { secretKeyRef: { name: app-secret, key: DB_USERNAME } } }
+            - { name: DB_PASSWORD, valueFrom: { secretKeyRef: { name: app-secret, key: DB_PASSWORD } } }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8085 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8085 }
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: delivery-service, namespace: ai-commerce }
+spec:
+  selector: { app: delivery-service }
+  ports: [{ port: 8085, targetPort: 8085 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: point-service, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: point-service } }
+  template:
+    metadata:
+      labels: { app: point-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8086"
+    spec:
+      containers:
+        - name: point-service
+          image: ai-commerce/point-service:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8086 }]
+          envFrom: [{ configMapRef: { name: app-config } }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: "jdbc:postgresql://postgres:5432/point_db" }
+            - { name: DB_USERNAME, valueFrom: { secretKeyRef: { name: app-secret, key: DB_USERNAME } } }
+            - { name: DB_PASSWORD, valueFrom: { secretKeyRef: { name: app-secret, key: DB_PASSWORD } } }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8086 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8086 }
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: point-service, namespace: ai-commerce }
+spec:
+  selector: { app: point-service }
+  ports: [{ port: 8086, targetPort: 8086 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: notification-service, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: notification-service } }
+  template:
+    metadata:
+      labels: { app: notification-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8087"
+    spec:
+      containers:
+        - name: notification-service
+          image: ai-commerce/notification-service:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8087 }]
+          envFrom: [{ configMapRef: { name: app-config } }]
+          env:
+            - { name: SPRING_DATASOURCE_URL, value: "jdbc:postgresql://postgres:5432/notification_db" }
+            - { name: DB_USERNAME, valueFrom: { secretKeyRef: { name: app-secret, key: DB_USERNAME } } }
+            - { name: DB_PASSWORD, valueFrom: { secretKeyRef: { name: app-secret, key: DB_PASSWORD } } }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8087 }
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8087 }
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: notification-service, namespace: ai-commerce }
+spec:
+  selector: { app: notification-service }
+  ports: [{ port: 8087, targetPort: 8087 }]
+---
+# ai-service: DB/Kafka/Redis 불필요. LLM 백엔드는 컨테이너에 claude.exe(CLI)가 없으므로 api 모드로 둔다.
+# (실제 AI 호출엔 ANTHROPIC_API_KEY 필요 — 미설정 시 호출만 실패, 기동/health 는 정상)
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: ai-service, namespace: ai-commerce }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: ai-service } }
+  template:
+    metadata:
+      labels: { app: ai-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+    spec:
+      containers:
+        - name: ai-service
+          image: ai-commerce/ai-service:latest
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 8080 }]
+          env:
+            - { name: LLM_BACKEND, value: "api" }
+            - { name: PRODUCT_SERVICE_URL, value: "http://product-service:8082" }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8080 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8080 }
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata: { name: ai-service, namespace: ai-commerce }
+spec:
+  selector: { app: ai-service }
+  ports: [{ port: 8080, targetPort: 8080 }]
