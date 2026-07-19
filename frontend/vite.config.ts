@@ -13,6 +13,8 @@ export default defineConfig({
       '/api/orders': 'http://localhost:8083',
       '/api/payments': 'http://localhost:8084',
       '/api/deliveries': 'http://localhost:8085',
+      '/api/points': 'http://localhost:8086',
+      '/api/notifications': 'http://localhost:8087',
       '/api/ai': 'http://localhost:8080',
     },
   },

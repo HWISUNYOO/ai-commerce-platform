@@ -33,3 +33,10 @@ management:
     web:
       exposure:
         include: health,info
+
+# 개발용: 실행 SQL·바인딩 값·트랜잭션 시작/커밋을 로그로 확인
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
+    org.springframework.orm.jpa.JpaTransactionManager: debug

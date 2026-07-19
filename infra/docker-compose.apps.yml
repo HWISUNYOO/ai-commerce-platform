@@ -81,3 +81,41 @@ services:
     ports:
       - "127.0.0.1:8085:8085"
     restart: unless-stopped
+
+  point-service:
+    build: ../services/point-service
+    image: ai-commerce/point-service
+    container_name: ai-commerce-point
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/point_db
+      KAFKA_BOOTSTRAP: kafka:29092
+      REDIS_HOST: redis
+    ports:
+      - "127.0.0.1:8086:8086"
+    restart: unless-stopped
+
+  notification-service:
+    build: ../services/notification-service
+    image: ai-commerce/notification-service
+    container_name: ai-commerce-notification
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/notification_db
+      KAFKA_BOOTSTRAP: kafka:29092
+      REDIS_HOST: redis
+    ports:
+      - "127.0.0.1:8087:8087"
+    restart: unless-stopped

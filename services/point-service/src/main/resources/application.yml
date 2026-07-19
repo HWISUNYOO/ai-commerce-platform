@@ -1,8 +1,8 @@
 spring:
   application:
-    name: payment-service
+    name: point-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/payment_db
+    url: jdbc:postgresql://localhost:5432/point_db
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
   jpa:
@@ -16,14 +16,14 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
     consumer:
-      group-id: payment-service
+      group-id: point-service
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.value.default.type: com.aicommerce.payment.event.OrderCreatedEvent
+        spring.json.value.default.type: com.aicommerce.point.event.PaymentApprovedEvent
         spring.json.use.type.headers: false
-        spring.json.trusted.packages: com.aicommerce.payment.event
+        spring.json.trusted.packages: com.aicommerce.point.event
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
@@ -34,18 +34,17 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
+app:
+  events:
+    enabled: true
+  point:
+    earn-rate: 0.01   # 결제금액의 1% 적립
+
 server:
-  port: 8084
+  port: 8086
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
-
-# 개발용: 실행 SQL·바인딩 값·트랜잭션 시작/커밋을 로그로 확인
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
-    org.springframework.orm.jpa.JpaTransactionManager: debug

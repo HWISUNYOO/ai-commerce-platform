@@ -3,6 +3,7 @@ package com.aicommerce.payment.event;
 import com.aicommerce.payment.domain.PaymentMethod;
 import com.aicommerce.payment.service.PaymentService;
 import com.aicommerce.payment.web.dto.PaymentCreateRequest;
+import com.aicommerce.payment.web.dto.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class OrderEventListener {
 	private static final Duration IDEMPOTENCY_TTL = Duration.ofHours(1);
 
 	private final PaymentService paymentService;
+	private final PaymentEventPublisher paymentEventPublisher;
 	private final StringRedisTemplate redisTemplate;
 
 	@KafkaListener(topics = "order.created", groupId = "payment-service")
@@ -41,7 +43,13 @@ public class OrderEventListener {
 		}
 
 		log.info("Received OrderCreated: orderId={}, amount={}", event.orderId(), event.totalAmount());
-		paymentService.create(new PaymentCreateRequest(event.orderId(), event.totalAmount(), PaymentMethod.CARD));
+		PaymentResponse payment = paymentService.create(
+				new PaymentCreateRequest(event.orderId(), event.totalAmount(), PaymentMethod.CARD));
 		log.info("Payment created for orderId={}", event.orderId());
+
+		// 결제 승인 이벤트 발행 → point-service(적립)·notification-service(알림)가 구독.
+		// memberId 는 Payment 가 보유하지 않으므로 원본 이벤트 값을 그대로 전달한다.
+		paymentEventPublisher.publishPaymentApproved(new PaymentApprovedEvent(
+				payment.id(), event.orderId(), event.memberId(), payment.amount()));
 	}
 }

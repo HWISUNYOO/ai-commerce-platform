@@ -1,0 +1,19 @@
+# Tests run against an in-memory H2 database in PostgreSQL-compatibility mode.
+# Flyway is disabled here; Hibernate generates the schema from the entities.
+# Kafka 리스너는 브로커가 없으므로 시작하지 않는다.
+spring:
+  datasource:
+    url: jdbc:h2:mem:point;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate.format_sql: true
+  flyway:
+    enabled: false
+  kafka:
+    listener:
+      auto-startup: false
