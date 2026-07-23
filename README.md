@@ -141,6 +141,7 @@ cd services/<service>
 
 - [아키텍처 결정 기록(ADR)](docs/adr/)
 - [트러블슈팅 기록](docs/troubleshooting.md)
+- [성능 테스트 결과](docs/performance.md)
 
 ## 로드맵 (6 Phase)
 
